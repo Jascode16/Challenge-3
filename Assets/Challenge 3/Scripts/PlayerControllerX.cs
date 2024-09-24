@@ -10,12 +10,17 @@ public class PlayerControllerX : MonoBehaviour
     private float gravityModifier = 1.5f;
     private Rigidbody PlayerRb;
 
+    private bool isLowEnough = true;
+    private float maxHeight = 10;
+    private float bounceForce = 5;
+
     public ParticleSystem explosionParticle;
     public ParticleSystem fireworksParticle;
 
     private AudioSource playerAudio;
     public AudioClip moneySound;
     public AudioClip explodeSound;
+    public AudioClip bounceSound;
 
 
     // Start is called before the first frame update
@@ -34,10 +39,23 @@ public class PlayerControllerX : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(transform.position.y >= maxHeight) {
+            isLowEnough = false;
+        }else
+        {
+            isLowEnough = true;
+        }
         // While space is pressed and player is low enough, float up
-        if (Input.GetKey(KeyCode.Space) && !gameOver)
+        if (Input.GetKey(KeyCode.Space) && !gameOver && isLowEnough)
         {
             PlayerRb.AddForce(Vector3.up * floatForce, ForceMode.Acceleration);
+        }
+        //This allow the ballon to bounce off the ground
+        if (transform.position.y < -5)
+        {
+            PlayerRb.AddForce(Vector3.up * bounceForce, ForceMode.Impulse);
+            //This adds the bouncing sound
+            playerAudio.PlayOneShot(bounceSound, 1.0f);
         }
     }
 
